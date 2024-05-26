@@ -16,7 +16,7 @@ document
     };
 
     // Send the user data to the API
-    fetch("http://localhost:3000/api/users", {
+    fetch("https://learning-platform-zlbc.vercel.app/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ document
 
   async function getUserByEmail(email) {
     try {
-      const response = await fetch(`http://localhost:3000/api/users/userss/${email}`);
+      const response = await fetch(`https://learning-platform-zlbc.vercel.app/api/users/userss/${email}`);
       const data = await response.json();
   
       if (response.ok) {
