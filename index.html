@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+      <nav>
+            <div class="container">
+                <h2 class="logo">Interactive Learning Platform</h2>
+                <div class="search-bar">
+                    <i class="uil uil-search"></i>
+                    <input
+                    type="search"
+                    placeholder="Search for other students"
+                    />
+                </div>
+                <div class="create">
+                    <a class="btn btn-primary" id="chatButton" >Log Out</a>
+                    <div class="profile-pic">
+                        <img src="images/profile-8.jpg" alt="pic 1" />
+                    </div>
+                </div>
+            </div>
+      </nav>
+      <script>
+        document.getElementById("chatButton").addEventListener("click", function(event) {
+    event.preventDefault(); 
+
+    localStorage.removeItem("user");
+
+    window.location.href = "login.html"; 
+});
+
+      </script>
+
+      <main>
+          <div class="container">
+              <div class="left">
+                  <a class="profile">
+                      <div class="profile-pic">
+                        <img src="./images/profile-8.jpg">
+                      </div>
+                      <div class="handle">
+                          <h4 id="username_local"></h4>
+                          <p class="text-muted"><span id="username_local1"></span></p>
+                      </div>
+                  </a>
+                  <div class="sidebar">
+                    <a class="menu-item active">
+                      <span><i class="uil uil-home"></i></span> <h3>Home</h3>
+                    </a>
+                    
+                    
+                    <a class="menu-item" onclick="goToMessage()">
+                        <i class="uil uil-envelope"></i></span><h3>Messages</h3>
+                    </a>
+                    <a class="menu-item" onclick="goToProfile()">
+                        <span><i class="uil uil-setting"></i></span> <h3>Profile</h3>
+                    </a>
+                    
+                    <script>
+                        function goToProfile() {
+                    window.location.href = "profile.html";
+                    }
+                    function goToMessage() {
+                    window.location.href = "chat.html";
+                    }
+
+                    </script>
+                    
+                    <label class="btn btn-primary" for="create-post" id="create-post">Ask a Question</label>
+                </div>
+              </div>
+              
+              
+              <div class="middle">
+                <form id="uploadForm" class="create-post" enctype="multipart/form-data">
+                    <input type="file" name="photo" accept="image/*" required />
+                    <input type="text" name="caption" placeholder="Ask a Question!" required />
+                    <!-- <input type="number" name="userId" placeholder="User ID" required /> -->
+                    <button type="submit">Upload</button>
+                </form>
+
+                <script>
+                    document.getElementById("create-post").addEventListener("click", function() {
+  document.querySelector("input[name='caption']").focus();
+});
+
+                </script>
+
+
+                <div class="preview" id="preview">
+                    
+                    <img id="preview-img" src="" alt="Image Preview">
+                </div>
+
+                <script>
+                    document
+                    .getElementById("uploadForm")
+                    .addEventListener("submit", async function (event) {
+                    event.preventDefault();
+
+                    const formData = new FormData(this);
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    formData.set("userId", user.id);
+
+                    try {
+                        const response = await fetch("http://localhost:3000/api/photoss", {
+                        method: "POST",
+                        body: formData,
+                        });
+
+                        if (response.ok) {
+                        alert("Photo uploaded successfully");
+                         
+                        } else {
+                        const errorData = await response.json();
+                        alert(`Failed to upload photo: ${errorData.error}`);
+                        }
+                    } catch (error) {
+                        console.error("Error uploading photo: ", error);
+                        alert("An error occurred while uploading photo");
+                    }
+                    });
+                  </script>
+                <div class="feeds">
+
+
+                    <ul id="post-list" ></ul>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            fetch('http://localhost:3000/api/posts')
+                            .then(response => response.json())
+                            .then(posts => {
+                                posts.forEach(post => {
+                                // Fetch user for each post
+                                //<img src="images/${post.img}" alt="">
+                                
+
+                                fetch(`http://localhost:3000/api/users/${post.senderid}`)
+                                    .then(response => response.json())
+                                    .then(user => {
+                                    // Create HTML elements and populate with data
+                                    const li = document.createElement('li');
+                                    li.innerHTML = `
+                                        <div class="feed">
+                                            <div class="head">
+                                                <!-- Header content here -->
+                                            </div>
+                                            <div class="user">
+                                                <div class="profile-pic">
+                                                    <img src="images/profile-14.jpg" alt="">
+                                                </div>
+                                                <div class="info">
+                                                    <h3>${user.name}</h3>
+                                                    <small></small>
+                                                </div>
+                                                <span class="edit"><i class="uil uil-ellipsis-h"></i></span>
+                                            </div>
+                                            <div class="photo">
+                                                
+                                                
+                                            </div>
+                                            <div class="action-button">
+                                            <div class="interaction-button" id="commentBtn-${post.id}">
+                                            <span><i class="uil uil-comment"></i> Yorum Yap</span>
+                                            </div>
+                                            </div>
+
+                                            <div class="liked-by">
+                                                <span><img src="images/profile-15.jpg"></span>
+                                                <span><img src="images/profile-16.jpg"></span>
+                                                <span><img src="images/profile-17.jpg"></span>
+                                                <p><b></b><b></b></p>
+                                            </div>
+                                            <div class="caption">
+                                                <p><b>${user.name}</b>  ${post.text}
+                                                <span class="hash-tag"></span></p>
+                                            </div>
+                                            <div class="comments text-muted" id="commentList-${post.id}"></div>
+                                        </div>
+                                    `;
+                                    
+
+                                    const userList = document.getElementById('post-list');
+                                    // Append the created element to the list
+                                    userList.appendChild(li);
+                                    fetch(`http://localhost:3000/images/${post.img}`)
+                                    .then((response) => {
+                                        if (!response.ok) {
+                                        throw new Error("Network response was not ok");
+                                        }
+                                        return response.blob(); // Convert response to blob
+                                    })
+                                    .then((blob) => {
+                                        // Create an object URL from the blob
+                                        const imgUrl = URL.createObjectURL(blob);
+
+                                        // Use the URL to display the image in your frontend
+                                        const imgElement = document.createElement("img");
+                                        imgElement.src = imgUrl;
+                                        const photoDiv = li.querySelector('.photo');
+                                        photoDiv.appendChild(imgElement);
+                                        //document.body.appendChild(imgElement);
+                                    })
+                                    .catch((error) => {
+                                        console.error(
+                                        "There was a problem with the fetch operation:",
+                                        error
+                                        );
+                                    });
+
+                                    // Yorum gönder butonu
+                const commentBtn = document.getElementById(`commentBtn-${post.id}`);
+                commentBtn.addEventListener('click', () => {
+                    const commentList = document.getElementById(`commentList-${post.id}`);
+                    const newComment = document.createElement('div');
+                    newComment.classList.add('comment');
+                    newComment.innerHTML = `
+                        <input type="text" placeholder="Yorumunuzu buraya girin..." />
+                        <button type="button" onclick="sendComment(${post.id})">Gönder</button>
+                    `;
+                    commentList.appendChild(newComment);
+                });
+                fetch(`http://localhost:3000/api/comments?postId=${post.id}`)
+                                    .then(response => response.json())
+                                    .then(comments => {
+                                        comments.forEach(comment => {
+                                            fetch(`http://localhost:3000/api/users/${comment.senderid}`)
+                                                .then(response => response.json())
+                                                .then(commentUser => {
+                                                    const commentDiv = document.createElement('div');
+                                                    commentDiv.classList.add('comment');
+                                                    commentDiv.innerHTML = `
+                                                        <p><b>${commentUser.name}</b>: ${comment.text}</p>
+                                                    `;
+                                                    const commentList = document.getElementById(`commentList-${post.id}`);
+                                                    commentList.appendChild(commentDiv);
+                                                });
+                                        });
+                                    });
+            });
+        });
+    });
+});
+
+// Yorum gönderme fonksiyonu
+function sendComment(postId) {
+    const inputField = document.querySelector(`#commentList-${postId} input[type="text"]`);
+    const commentText = inputField.value.trim();
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    if (commentText === "") {
+        alert("Lütfen bir yorum girin!");
+        return;
+    }
+
+    fetch("http://localhost:3000/api/comments", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            postId: postId,
+                    text: commentText,
+                    senderid: user.id
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Yorum başarıyla gönderildi!");
+            inputField.value = "";
+        } else {
+            throw new Error("Yorum gönderme başarısız oldu");
+        }
+    })
+    .catch(error => {
+        alert("Yorum gönderilirken bir hata oluştu: " + error.message);
+    });
+}
+                        </script>
+                </div> 
+              </div>
+
+              
+              <div class="right">
+                  <div class="messages">
+                    <div class="heading">
+                        <h4>Messages</h4>
+                        <span><i class="uil uil-edit"></i></span>
+                    </div>
+  
+                    <div class="search-bar">
+                        <span><i class="uil uil-search"></i></span>
+                        <input type="search" placeholder="Search Messages" id="message-search">
+                    </div>
+  
+                    <div class="category">
+                        <h6 class="active">Primary</h6>
+                        
+                    </div>
+
+
+                    <ul id="user-list"></ul>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            fetch('http://localhost:3000/api/users')
+                                .then(response => response.json())
+                                .then(users => {
+                                    const userList = document.getElementById('user-list');
+                                    users.forEach(user => {
+                                        const li = document.createElement('li');
+                                        li.innerHTML = `
+                                            <div class="message">
+                                                <div class="profile-pic">
+                                                    <img src="images/profile-17.jpg" alt="Profile Picture">
+                                                    <div class="active"></div>
+                                                </div>
+                                                <div class="message-body">
+                                                    <h5>${user.name}</h5>
+                                                    <p class="text-muted">${user.status}</p>
+                                                </div>
+                                            </div>
+                                        `;
+                                        userList.appendChild(li);
+                                    });
+                                })
+                                .catch(error => console.error('Error fetching users:', error));
+                        });
+                    </script>         
+                </div>
+              </div>
+          </div>
+      </main>
+        <script src="./fetch.js"></script>
+        <script src="./index.js"></script>
+
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // localStorage'tan kullanıcı bilgilerini al
+    const user = JSON.parse(localStorage.getItem("user"));
+  console.log(localStorage.getItem('user'));
+    // Kullanıcı bilgilerini HTML elementlerine atama
+    document.getElementById('username_local').textContent = user.name;
+    document.getElementById('username_local1').textContent = user.email;
+  });
+            
+        </script>
+  </body>
+  
+</html>
