@@ -120,7 +120,7 @@
                     formData.set("userId", user.id);
 
                     try {
-                        const response = await fetch("https://verdant-ganache-3d9141.netlify.app/api/photoss", {
+                        const response = await fetch("https://learning-platform-zlbc.vercel.app/api/photoss", {
                         method: "POST",
                         body: formData,
                         });
@@ -144,7 +144,7 @@
                     <ul id="post-list" ></ul>
                     <script>
                         document.addEventListener('DOMContentLoaded', () => {
-                            fetch('https://verdant-ganache-3d9141.netlify.app/api/posts')
+                            fetch('https://learning-platform-zlbc.vercel.app/api/posts')
                             .then(response => response.json())
                             .then(posts => {
                                 posts.forEach(post => {
@@ -152,7 +152,7 @@
                                 //<img src="images/${post.img}" alt="">
                                 
 
-                                fetch(`https://verdant-ganache-3d9141.netlify.app/api/users/${post.senderid}`)
+                                fetch(`https://learning-platform-zlbc.vercel.app/api/users/${post.senderid}`)
                                     .then(response => response.json())
                                     .then(user => {
                                     // Create HTML elements and populate with data
@@ -200,7 +200,7 @@
                                     const userList = document.getElementById('post-list');
                                     // Append the created element to the list
                                     userList.appendChild(li);
-                                    fetch(`https://verdant-ganache-3d9141.netlify.app/images/${post.img}`)
+                                    fetch(`https://learning-platform-zlbc.vercel.app/images/${post.img}`)
                                     .then((response) => {
                                         if (!response.ok) {
                                         throw new Error("Network response was not ok");
@@ -237,11 +237,11 @@
                     `;
                     commentList.appendChild(newComment);
                 });
-                fetch(`https://verdant-ganache-3d9141.netlify.app/api/comments?postId=${post.id}`)
+                fetch(`https://learning-platform-zlbc.vercel.app/api/comments?postId=${post.id}`)
                                     .then(response => response.json())
                                     .then(comments => {
                                         comments.forEach(comment => {
-                                            fetch(`https://verdant-ganache-3d9141.netlify.app/api/users/${comment.senderid}`)
+                                            fetch(`https://learning-platform-zlbc.vercel.app/api/users/${comment.senderid}`)
                                                 .then(response => response.json())
                                                 .then(commentUser => {
                                                     const commentDiv = document.createElement('div');
@@ -270,7 +270,7 @@ function sendComment(postId) {
         return;
     }
 
-    fetch("https://verdant-ganache-3d9141.netlify.app/api/comments", {
+    fetch("https://learning-platform-zlbc.vercel.app/api/comments", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -319,7 +319,7 @@ function sendComment(postId) {
                     <ul id="user-list"></ul>
                     <script>
                         document.addEventListener('DOMContentLoaded', () => {
-                            fetch('https://verdant-ganache-3d9141.netlify.app/api/users')
+                            fetch('https://learning-platform-zlbc.vercel.app/api/users')
                                 .then(response => response.json())
                                 .then(users => {
                                     const userList = document.getElementById('user-list');
